@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday!</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            font-family: 'Inter', sans-serif;
+            height: 100vh;
+            touch-action: manipulation;
+            background: linear-gradient(5deg, #FF0000, #FFFFFF);
+        }
+
+        body.fade-out {
+            opacity: 0;
+            transition: opacity 0.6s;
+        }
+
+        #app {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        #content {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            box-sizing: border-box;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .step {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            max-height: calc(100vh - 80px);
+            padding: 40px;
+            background: rgba(255, 255, 255, 0.509);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+            pointer-events: none;
+            overflow-y: auto;
+        }
+
+        #step1 p {
+            text-align: left;
+        }
+
+        .step.active {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: all;
+        }
+
+        .btn {
+            background: linear-gradient(0deg, #ff2a2a, #ffbaba);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 20px;
+            box-shadow: 0 4px 15px rgba(236, 72, 153, 0.3);
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(236, 72, 153, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .text-gradient {
+            background: linear-gradient(135deg, #ec4899, #f43f5e, #f59e0b);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .heart-beat {
+            animation: heartbeat 1.5s ease-in-out infinite;
+        }
+
+        @keyframes heartbeat {
+            0% {
+                transform: scale(1);
+            }
+
+            25% {
+                transform: scale(1.1);
+            }
+
+            50% {
+                transform: scale(1);
+            }
+
+            75% {
+                transform: scale(1.1);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .emoji {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            display: inline-block;
+        }
+
+        .reason-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .reason-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        #progress-container {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80%;
+            max-width: 400px;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 3px;
+            z-index: 100;
+        }
+
+        #progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #ec4899, #f43f5e);
+            border-radius: 3px;
+            transition: width 0.5s ease;
+        }
+
+        #canvas-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            
+        }
+
+        .confession {
+            color: #000000;
+            font-weight: bold;
+            font-size: 14px;
+            font-style: normal;
+        }
+
+            .confessionn {
+            color: #df00e7;
+            font-weight: bold;
+            font-size: 1.2em;
+            font-style: normal;
+        }
+        /* From Uiverse.io by vinodjangid07 */ 
+.faq-button {
+  width: 120px;
+  height: 30px;
+  border-radius: 50%;
+  border: none;
+  background-color: #630d76;
+  background-image: linear-gradient(147deg, #933bff 0%, #ff25f4 74%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0px 10px 10px rgba(0, 0, 0, 0.151);
+  position: relative;
+}
+.faq-button svg {
+  height: 1.5em;
+  fill: white;
+}
+.faq-button:hover svg {
+  animation: jello-vertical 0.7s both;
+}
+
+.envelope-holder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin: 24px auto 0;
+  max-width: 320px;
+}
+
+.envelope-copy {
+  color: white;
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  text-align: center;
+}
+
+.envelope-card {
+  width: 160px;
+  height: 100px;
+  border-radius: 18px 18px 14px 14px;
+  background: linear-gradient(180deg, #ffe0ee, #ff9abe);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  box-shadow: 0 24px 40px rgba(0, 0, 0, 0.18);
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.envelope-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 30px 50px rgba(0, 0, 0, 0.22);
+}
+
+.envelope-card.open .envelope-flap {
+  transform: rotateX(180deg) translateY(-14px);
+}
+
+.envelope-flap {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 56px;
+  background: linear-gradient(135deg, #ffd5e3, #ff8fb4);
+  border-radius: 18px 18px 0 0;
+  transform-origin: top;
+  transform: rotateX(0deg);
+  transition: transform 0.35s ease;
+}
+
+.envelope-body {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-top: 24px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #740032;
+  text-transform: uppercase;
+}
+
+.envelope-count {
+  font-size: 0.95rem;
+  color: #fff;
+  max-width: 260px;
+  text-align: center;
+}
+
+.envelope-message {
+  color: #f7f0ff;
+  font-size: 0.95rem;
+  line-height: 1.7;
+  max-width: 760px;
+  width: 100%;
+  text-align: left;
+  padding: 24px;
+  border-radius: 24px;
+  background: rgba(18, 7, 30, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
+}
+
+.envelope-message::-webkit-scrollbar {
+  width: 8px;
+}
+
+.envelope-message::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+}
+
+.envelope-message::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.envelope-reveal {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.envelope-reveal.visible {
+  display: flex;
+  opacity: 1;
+}
+
+@keyframes jello-vertical {
+  0% {
+    transform: scale3d(1, 1, 1);
+  }
+  30% {
+    transform: scale3d(0.75, 1.25, 1);
+  }
+  40% {
+    transform: scale3d(1.25, 0.75, 1);
+  }
+  50% {
+    transform: scale3d(0.85, 1.15, 1);
+  }
+  65% {
+    transform: scale3d(1.05, 0.95, 1);
+  }
+  75% {
+    transform: scale3d(0.95, 1.05, 1);
+  }
+  100% {
+    transform: scale3d(1, 1, 1);
+  }
+}
+
+.tooltip {
+  position: absolute;
+  top: -20px;
+  opacity: 0;
+  background-color: #780678;
+  background-image: linear-gradient(147deg, #963bff 0%, #ff25f0 74%);
+  color: white;
+  padding: 5px 10px;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition-duration: 0.2s;
+  pointer-events: none;
+  letter-spacing: 0.5px;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+}
+ 
+.faq-button:hover .tooltip {
+  top: -40px;
+  opacity: 1;
+  transition-duration: 0.3s;
+}
+
+    </style>
+</head>
+
+<body>
+    <audio control autoplay>
+        <source src = "never.mp3" type="audio/mpeg">
+    </audio>
+    <div id="app">
+        <div id="canvas-container"></div>
+        <div id="progress-container">
+            <div id="progress-bar"></div>
+        </div>
+
+        <div id="content">
+            <div class="step active" id="step1">
+                <div class="envelope-copy"> </div>
+
+                <div class="envelope-holder">
+                    <div class="envelope-copy"></div>
+                    <button id="envelopeBtn" class="envelope-card" type="button">
+                        <div class="envelope-flap"></div>
+                        <div class="envelope-body">Keep tapping me</div>
+                    </button>
+                    <div id="envelopeCount" class="envelope-count" style="color: rgb(0, 0, 0);">Click the envelope to unlock.</div>
+                </div>
+
+                <div id="envelopeReveal" class="envelope-reveal">
+                    <div id="envelopeMessage" class="envelope-message">
+                        hi… this might be random, pero i just wanna be honest for once without overthinking too much<br><br>
+                        i’ve been meaning to say this for a while na, pero lagi kong pinipigilan sarili ko kasi ayoko maging awkward or ruin whatever we have. pero ayun… here i am, finally giving in kasi ang hirap na itago HAHAHAHAHAH.<br><br>
+                        somewhere between our random chats, yung mga small moments, and even yung simpleng presence mo—dun ko na-realize na i started liking you.<br><br>
+                         like not in a dramatic “love at first sight” way, more like… slowly, quietly, hanggang sa one day bigla ko nalang napansin na hinahanap ko na yung messages mo. ang funny nga kasi hindi ko naman planong ma-fall sayo pero wala eh, napunta na ko dito. i’m not saying this para may i-expect ako from you. promise, hindi ka obligated to feel the same.<br><br>
+                        i just really wanted to let it out kasi ang bigat na i-keep to myself, and you deserve honesty at least. tsaka lowkey unfair din sayo if i act normal pero may tinatago pala ako diba.<br><br>
+                        honestly, i tried ignoring it. like “ah lilipas din to” or “baka bored lang ako” pero no… hindi siya nawawala. every time we talk, parang mas lalo lang siyang lumalalim. ang corny pakinggan pero yeah, ganun siya.<br><br>
+                        and don’t worry, i’m not here to complicate things or pressure you. if you don’t feel the same, okay lang talaga. i’ll respect that 100%. i just don’t wanna regret not saying anything at all.<br><br>
+                        so ayun… i like you. not in a loud, grand way, but in a quiet “ikaw yung hinahanap ko” type of way.<br><br>
+                        and if ever you’d give me the chance, i’d really like to know you more—like genuinely, beyond just our chats. no rush, no pressure, just taking things naturally with you.<br><br>
+                        take care always, and kahit ano man maging response mo, i’ll still appreciate you the same.<br><br>
+                        (hover mo ung solomon)
+                    </div>
+                    <button id="solomonBtn" class="faq-button" type="button">
+                        <em class="confession">Solomon 4:7</em>
+                        <span class="tooltip">You are altogether beautiful, my love; there is no flaw in you.</span>
+                    </button>
+                </div>
+
+                <a href="index.html" class="btn">WOW</a>
+
+            </div>
+
+
+            <script>
+                // Three.js Heart Background
+                const container = document.getElementById('canvas-container');
+                const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+                renderer.setSize(window.innerWidth, window.innerHeight);
+                container.appendChild(renderer.domElement);
+
+                const scene = new THREE.Scene();
+                const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+                camera.position.z = 30;
+
+                // Improved Heart Geometry
+                const x = 0, y = 0;
+                const heartShape = new THREE.Shape();
+                heartShape.moveTo(x + 0.5, y + 0.5);
+                heartShape.bezierCurveTo(x + 0.5, y + 0.5, x + 1, y, x, y);
+                heartShape.bezierCurveTo(x - 1, y, x - 1, y + 1.5, x - 1, y + 1.5);
+                heartShape.bezierCurveTo(x - 1, y + 2.5, x + 0.5, y + 3.5, x + 0.5, y + 3.5);
+                heartShape.bezierCurveTo(x + 0.5, y + 3.5, x + 2, y + 2.5, x + 2, y + 1.5);
+                heartShape.bezierCurveTo(x + 2, y + 1.5, x + 2, y, x + 1, y);
+                heartShape.bezierCurveTo(x + 0.5, y, x + 0.5, y + 0.5, x + 0.5, y + 0.5);
+
+                const extrudeSettings = {
+                    depth: 0.5,
+                    bevelEnabled: true,
+                    bevelSegments: 3,
+                    bevelSize: 0.2,
+                    bevelThickness: 0.3
+                };
+
+                const heartGeometry = new THREE.ExtrudeGeometry(heartShape, extrudeSettings);
+
+                // Create multiple hearts with different colors and properties
+                const hearts = [];
+                const colors = [
+                    0xff6b6b, 0xff8e8e, 0xffb3b3, 0xffd8d8,
+                    0xff9e9e, 0xffc1c1, 0xff6b8e, 0xff8eb3
+                ];
+
+                for (let i = 0; i < 25; i++) {
+                    const material = new THREE.MeshPhongMaterial({
+                        color: colors[Math.floor(Math.random() * colors.length)],
+                        emissive: 0xff0000,
+                        emissiveIntensity: 0.1,
+                        shininess: 100,
+                        transparent: true,
+                        opacity: 0.9
+                    });
+
+                    const heart = new THREE.Mesh(heartGeometry, material);
+
+                    // Random position and scale
+                    heart.position.x = (Math.random() - 0.5) * 50;
+                    heart.position.y = (Math.random() - 0.5) * 50;
+                    heart.position.z = (Math.random() - 0.5) * 50;
+
+                    const scale = Math.random() * 0.8 + 0.5;
+                    heart.scale.set(scale, scale, scale);
+
+                    // Random rotation
+                    heart.rotation.x = Math.random() * Math.PI;
+                    heart.rotation.y = Math.random() * Math.PI;
+
+                    // Store animation properties
+                    heart.userData = {
+                        speedX: Math.random() * 0.02 - 0.01,
+                        speedY: Math.random() * 0.02 - 0.01,
+                        speedZ: Math.random() * 0.02 - 0.01,
+                        rotationSpeedX: Math.random() * 0.01,
+                        rotationSpeedY: Math.random() * 0.01,
+                        originalX: heart.position.x,
+                        originalY: heart.position.y,
+                        originalZ: heart.position.z,
+                        floatDistance: 2 + Math.random() * 3
+                    };
+
+                    scene.add(heart);
+                    hearts.push(heart);
+                }
+
+                // Add lights
+                const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+                scene.add(ambientLight);
+
+                const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+                directionalLight.position.set(1, 1, 1);
+                scene.add(directionalLight);
+
+                // Animation loop
+                function animate() {
+                    requestAnimationFrame(animate);
+
+                    // Animate hearts
+                    hearts.forEach(heart => {
+                        // Floating animation
+                        const time = Date.now() * 0.001;
+                        heart.position.x = heart.userData.originalX + Math.sin(time * heart.userData.speedX * 10) * heart.userData.floatDistance;
+                        heart.position.y = heart.userData.originalY + Math.sin(time * heart.userData.speedY * 10) * heart.userData.floatDistance;
+                        heart.position.z = heart.userData.originalZ + Math.sin(time * heart.userData.speedZ * 10) * heart.userData.floatDistance;
+
+                        // Rotation
+                        heart.rotation.x += heart.userData.rotationSpeedX;
+                        heart.rotation.y += heart.userData.rotationSpeedY;
+                    });
+
+                    renderer.render(scene, camera);
+                }
+
+                animate();
+
+                // Handle window resize
+                window.addEventListener('resize', () => {
+                    camera.aspect = window.innerWidth / window.innerHeight;
+                    camera.updateProjectionMatrix();
+                    renderer.setSize(window.innerWidth, window.innerHeight);
+                });
+
+                // Step Navigation
+                let currentStep = 1;
+                const totalSteps = 25;
+
+                function updateProgressBar() {
+                    const progress = ((currentStep - 1) / (totalSteps - 1)) * 100;
+                    document.getElementById('progress-bar').style.width = `${progress}%`;
+                }
+
+                function showStep(stepNumber) {
+                    // Hide all steps
+                    document.querySelectorAll('.step').forEach(step => {
+                        step.classList.remove('active');
+                    });
+
+                    // Show current step
+                    document.getElementById(`step${stepNumber}`).classList.add('active');
+
+                    // Update progress bar
+                    updateProgressBar();
+
+                    // Special effect for last step
+                    if (stepNumber === totalSteps) {
+                        document.getElementById('confetti-btn').classList.add('animate-pulse');
+                    }
+                }
+
+                // Button event listeners
+                const startBtn = document.getElementById('start-btn');
+                if (startBtn) {
+                    startBtn.addEventListener('click', () => {
+                        currentStep = 2;
+                        showStep(currentStep);
+                    });
+                }
+
+                const nextBtn2 = document.getElementById('next-btn-2');
+                if (nextBtn2) {
+                    nextBtn2.addEventListener('click', () => {
+                        currentStep = 3;
+                        showStep(currentStep);
+                    });
+                }
+
+                const nextBtn3 = document.getElementById('next-btn-3');
+                if (nextBtn3) {
+                    nextBtn3.addEventListener('click', () => {
+                        currentStep = 4;
+                        showStep(currentStep);
+                    });
+                }
+
+                const nextBtn4 = document.getElementById('next-btn-4');
+                if (nextBtn4) {
+                    nextBtn4.addEventListener('click', () => {
+                        currentStep = 5;
+                        showStep(currentStep);
+                    });
+                }
+                 const nextBtn5 = document.getElementById('next-btn-5');
+                if (nextBtn5) {
+                    nextBtn5.addEventListener('click', () => {
+                        currentStep = 6;
+                        showStep(currentStep);
+                    });
+                }
+                 const nextBtn6 = document.getElementById('next-btn-6');
+                if (nextBtn6) {
+                    nextBtn6.addEventListener('click', () => {
+                        currentStep = 7;
+                        showStep(currentStep);
+                    });
+                }
+                 const nextBtn7 = document.getElementById('next-btn-7');
+                if (nextBtn7) {
+                    nextBtn7.addEventListener('click', () => {
+                        currentStep = 8;
+                        showStep(currentStep);
+                    });
+                }
+
+                // Confetti button
+                const confettiBtn = document.getElementById('confetti-btn');
+                if (confettiBtn) {
+                    confettiBtn.addEventListener('click', () => {
+                        // Standard confetti
+                        confetti({
+                            particleCount: 150,
+                            spread: 70,
+                            origin: { y: 0.6 },
+                            colors: ['#ff0000', '#ff69b4', '#ff1493', '#ffc0cb']
+                        });
+
+                        // Heart-shaped confetti
+                        setTimeout(() => {
+                            confetti({
+                                particleCount: 30,
+                                spread: 60,
+                                origin: { y: 0.5 },
+                                shapes: ['heart'],
+                                colors: ['#ff0000', '#ff69b4']
+                            });
+                        }, 300);
+
+                        // More hearts from different directions
+                        setTimeout(() => {
+                            confetti({
+                                particleCount: 20,
+                                angle: 60,
+                                spread: 55,
+                                origin: { x: 0 },
+                                shapes: ['heart'],
+                                colors: ['#ff0000', '#ff69b4']
+                            });
+
+                            confetti({
+                                particleCount: 20,
+                                angle: 120,
+                                spread: 55,
+                                origin: { x: 1 },
+                                shapes: ['heart'],
+                                colors: ['#ff0000', '#ff69b4']
+                            });
+                        }, 600);
+
+                        // Make hearts float up from the background
+                        hearts.forEach(heart => {
+                            gsap.to(heart.position, {
+                                y: heart.position.y - 30,
+                                duration: 3,
+                                ease: "power1.out"
+                            });
+
+                            gsap.to(heart.material, {
+                                opacity: 0,
+                                duration: 3,
+                                ease: "power1.out"
+                            });
+                        });
+                    });
+                }
+
+                // Envelope interaction
+                const envelopeHolder = document.querySelector('.envelope-holder');
+                const envelopeBtn = document.getElementById('envelopeBtn');
+                const envelopeCount = document.getElementById('envelopeCount');
+                const envelopeReveal = document.getElementById('envelopeReveal');
+                const solomonBtn = document.getElementById('solomonBtn');
+                let envelopeClicks = 0;
+
+                envelopeBtn.addEventListener('click', () => {
+                    if (envelopeClicks >= 25) return;
+                    envelopeClicks += 1;
+                    envelopeCount.textContent = `Click the envelope to unlock.`;
+
+                    if (envelopeClicks > 0 && envelopeClicks < 25) {
+                        envelopeCount.textContent = `Keep tapping...`;
+                    }
+                 
+                  
+
+                    if (envelopeClicks === 25) {
+                        envelopeBtn.classList.add('open');
+                        envelopeHolder.style.display = 'none';
+                        envelopeReveal.classList.add('visible');
+                        solomonBtn.classList.add('heart-beat');
+                    }
+                });
+
+                // Keep tooltip visible only on hover for the Solomon verse
+                solomonBtn.addEventListener('mouseenter', () => {
+                    document.querySelector('.tooltip').style.opacity = '1';
+                    document.querySelector('.tooltip').style.top = '-40px';
+                });
+
+                solomonBtn.addEventListener('mouseleave', () => {
+                    document.querySelector('.tooltip').style.opacity = '0';
+                    document.querySelector('.tooltip').style.top = '-20px';
+                });
+
+                // Initialize progress bar
+                updateProgressBar();
+
+                document.querySelectorAll('a[href]').forEach(link => {
+                    link.addEventListener('click', function (e) {
+                        const href = this.getAttribute('href');
+                        // Only fade if it's not an anchor link or javascript:void
+                        if (href && !href.startsWith('#') && !href.startsWith('javascript')) {
+                            e.preventDefault();
+                            document.body.classList.add('fade-out');
+                            setTimeout(() => {
+                                window.location.href = href;
+                            }, 600); // Match the CSS transition duration
+                        }
+                    });
+                });
+            </script>
+</body>
+
+</html>

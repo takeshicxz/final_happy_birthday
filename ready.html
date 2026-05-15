@@ -1,0 +1,644 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Birthday Playlist 💕</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f95c5c;
+            min-height: 100vh;
+            color: #1f2937;
+        }
+
+        body.fade-out {
+            opacity: 0;
+            transition: opacity 0.6s;
+        }
+
+        .page-wrapper {
+            max-width: 1080px;
+            margin: 0 auto;
+            padding: 28px;
+        }
+
+        .hero {
+            display: flex;
+            justify-content: space-between;
+            gap: 24px;
+            margin-bottom: 36px;
+            align-items: center;
+        }
+
+        .hero-text {
+            max-width: 560px;
+        }
+
+        .hero-label {
+            display: inline-block;
+            background: rgba(255, 20, 147, 0.12);
+            color: #be185d;
+            font-size: 14px;
+            font-weight: 700;
+            padding: 10px 16px;
+            border-radius: 999px;
+            margin-bottom: 18px;
+        }
+
+        .hero-title {
+            font-size: clamp(2.4rem, 4vw, 3.6rem);
+            line-height: 1.05;
+            font-weight: 800;
+            color: #831843;
+            margin-bottom: 18px;
+        }
+
+        .hero-copy {
+            font-size: 17px;
+            line-height: 1.8;
+            color: #4b5563;
+            max-width: 520px;
+        }
+
+        .hero-cover {
+            width: 180px;
+            height: 180px;
+            border-radius: 36px;
+            background: linear-gradient(135deg, #ff8faf, #ff3f92);
+            display: grid;
+            place-items: center;
+            box-shadow: 0 32px 90px rgba(236, 72, 153, 0.2);
+            color: white;
+            font-size: 4.5rem;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: 28px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 32px;
+            padding: 28px;
+            box-shadow: 0 28px 80px rgba(236, 72, 153, 0.12);
+            border: 1px solid rgba(255, 20, 147, 0.08);
+        }
+
+        .track-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .track-title {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #831843;
+        }
+
+        .track-artist {
+            color: #d02674;
+            font-weight: 700;
+            letter-spacing: 0.02em;
+        }
+
+        .track-meta {
+            margin-top: 8px;
+            color: #6b7280;
+            font-size: 0.96rem;
+        }
+
+        .progress-box {
+            margin-bottom: 20px;
+        }
+
+        .progress-top {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.95rem;
+            color: #6b7280;
+            margin-bottom: 10px;
+        }
+
+        .progress-bar {
+            height: 12px;
+            width: 100%;
+            border-radius: 999px;
+            background: #ffe5f0;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: 0;
+            border-radius: 999px;
+            background: linear-gradient(90deg, #f72585, #ff61a6);
+            transition: width 0.1s linear;
+        }
+
+        .player-controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 18px;
+            margin-bottom: 16px;
+        }
+
+        .btn-circle {
+            width: 58px;
+            height: 58px;
+            border-radius: 50%;
+            border: none;
+            background: #ffffff;
+            color: #d02674;
+            font-size: 1.2rem;
+            cursor: pointer;
+            box-shadow: 0 14px 35px rgba(236, 72, 153, 0.14);
+            transition: transform 0.25s ease, background 0.25s ease;
+            display: grid;
+            place-items: center;
+        }
+
+        .btn-circle:hover {
+            transform: translateY(-2px);
+            background: #ffe4f5;
+        }
+
+        .btn-play {
+            width: 72px;
+            height: 72px;
+            font-size: 1.5rem;
+            background: linear-gradient(135deg, #ff3f92, #ff91c2);
+            color: white;
+        }
+
+        .btn {
+            background: linear-gradient(0deg, #ff2a2a, #ffbaba);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(236, 72, 153, 0.3);
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .playlist-list {
+            display: grid;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .playlist-item {
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            align-items: center;
+            gap: 14px;
+            padding: 16px 18px;
+            border-radius: 22px;
+            background: #fff5fb;
+            border: 1px solid transparent;
+            cursor: pointer;
+            transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+        }
+
+        .playlist-item:hover {
+            transform: translateX(3px);
+            background: #ffe4f5;
+        }
+
+        .playlist-item.active {
+            background: linear-gradient(135deg, #ffe6f2, #fff1f6);
+            border-color: #ffaac9;
+        }
+
+        .track-number {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: rgba(255, 20, 147, 0.12);
+            color: #be185d;
+            font-weight: 700;
+            display: grid;
+            place-items: center;
+        }
+
+        .track-content {
+            display: grid;
+            gap: 4px;
+            text-align: left;
+        }
+
+        .track-name {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #4b5563;
+        }
+
+        .track-info {
+            font-size: 0.92rem;
+            color: #9d174d;
+        }
+
+        .message-panel {
+            margin-top: 10px;
+            min-height: 460px;
+            border-radius: 24px;
+            padding: 28px;
+            background: #fff0fb;
+            color: #831843;
+            font-size: 1.02rem;
+            line-height: 1.8;
+            box-shadow: inset 0 0 0 1px rgba(255, 20, 147, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .message-panel p {
+            margin: 0;
+            max-width: 520px;
+        }
+
+        .navigate-btn {
+            width: 100%;
+            margin-top: 20px;
+            padding: 16px;
+            border: none;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 1rem;
+            color: white;
+            background: linear-gradient(0deg, #ff2a2a, #ffbaba);
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(236, 72, 153, 0.3);
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .navigate-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .spotify-cta {
+            margin-top: 18px;
+            padding: 16px 18px;
+            border-radius: 24px;
+            background: rgba(29, 185, 84, 0.08);
+            border: 1px solid rgba(29, 185, 84, 0.18);
+            color: #134d23;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            text-align: left;
+        }
+
+        .spotify-cta p {
+            margin: 0;
+            font-weight: 700;
+            color: #134d23;
+        }
+
+        .spotify-cta a {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            color: #134d23;
+            font-weight: 700;
+            text-decoration: none;
+            background: rgba(29, 185, 84, 0.12);
+            padding: 10px 14px;
+            border-radius: 999px;
+            width: fit-content;
+            transition: transform 0.2s ease, background 0.2s ease;
+        }
+
+        .spotify-cta a:hover {
+            transform: translateY(-1px);
+            background: rgba(29, 185, 84, 0.18);
+        }
+
+        .spotify-logo {
+            display: inline-flex;
+            width: 20px;
+            height: 20px;
+            align-items: center;
+            justify-content: center;
+        }
+
+        @media (max-width: 860px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            .hero {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .hero-cover {
+                width: 160px;
+                height: 160px;
+                font-size: 3.5rem;
+            }
+
+            .lyrics-panel {
+                height: 360px;
+            }
+        }
+
+        @media (max-width: 560px) {
+            .page-wrapper {
+                padding: 16px;
+            }
+
+            .hero-title {
+                font-size: 2.4rem;
+            }
+
+            .playlist-item {
+                grid-template-columns: auto 1fr;
+            }
+
+            .track-number {
+                width: 30px;
+                height: 30px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="page-wrapper">
+        <header class="hero">
+            <div class="hero-text">
+                <h1 class="hero-title">ALL ABOUT YOU</h1>
+                <p class="hero-copy"></p>
+            </div>
+            <div class="hero-cover">🎵</div>
+        </header>
+
+        <div class="grid">
+            <section class="card">
+                <div class="track-header">
+                    <div>
+                        <div class="track-title">Song List</div>
+                        <div class="track-info">My best 5 songs about u</div>
+                    </div>
+                    <div class="track-info">5 songs</div>
+                </div>
+
+                <div class="playlist-list" id="track-list"></div>
+
+                <div class="track-header" style="margin-top: 18px;">
+                    <div>
+                        <div class="track-title" id="track-title">Choose a song</div>
+                        <div class="track-artist" id="track-artist"></div>
+                        <div class="track-meta">Click a song on the left to play it.</div>
+                    </div>
+                </div>
+
+                <div class="progress-box">
+                    <div class="progress-top">
+                        <span id="current-time">0:00</span>
+                        <span id="duration">0:00</span>
+                    </div>
+                    <div class="progress-bar" id="progress-bar">
+                        <div class="progress-fill" id="progress-fill"></div>
+                    </div>
+                </div>
+
+                <div class="player-controls">
+                    <button class="btn-circle" id="prev-btn">⏮</button>
+                    <button class="btn-circle btn-play" id="play-btn">▶</button>
+                    <button class="btn-circle" id="next-btn">⏭</button>
+                </div>
+
+                <button class="btn navigate-btn" id="go-messages">Continue to next</button>
+                <div class="spotify-cta">
+                    <p>i've made more songs about you if u don't mind.</p>
+                    <a href="https://open.spotify.com/playlist/4lNEq3NNdV1DdgnAXbLKeH?si=de5d646aa49f4711" target="_blank" rel="noopener noreferrer">
+                        <span class="spotify-logo" aria-hidden="true">
+                            <svg viewBox="0 0 496 512" width="18" height="18" xmlns="http://www.w3.org/2000/svg">
+                                <path fill="#1DB954" d="M248 8C111 8 0 119 0 256s111 248 248 248 248-111 248-248S385 8 248 8zm113.6 347.9c-4.6 7.2-14 9.4-21.2 4.8-58.2-37-131.4-45.4-217.5-24-8.3 2.3-16.7-3-18.9-11.2-2.3-8.3 3-16.7 11.2-18.9 92.1-25.8 171.1-16 234.5 26.7 7.1 4.5 9.3 13.8 4.8 21.2zm28.8-64.4c-5.8 9.1-17.9 11.8-27 6.1-66.6-42.6-168.4-54.7-247-28.9-10.1 3.7-21.1-1.8-24.8-11.9-3.7-10.1 1.8-21.1 11.9-24.8 89.9-32.9 205.3-19.1 283.2 33.4 9 5.8 11.7 17.9 6 27zm7.4-64.6c-76.5-49.1-195.5-53.8-268.2-28.4-12 4.6-25.4-1.9-30-14-4.6-12 1.9-25.4 14-30 81.9-31.5 211.4-26.4 293 31.5 12.6 8.1 16.7 24.9 8.6 37.5-8.1 12.6-24.9 16.7-37.5 8.4z"/>
+                            </svg>
+                        </span>
+                     Spotify
+                    </a>
+                </div>
+            </section>
+
+            <section class="card">
+                <div class="track-header">
+                    <div>
+                        <div class="track-title">Why this song reminds me of you</div>
+                        <div class="track-info">Choose a song and see why</div>
+                    </div>
+                </div>
+
+                <div class="message-panel" id="message-container"></div>
+            </section>
+        </div>
+    </div>
+
+    <audio id="audio-player"></audio>
+
+    <script>
+        const audio = document.getElementById('audio-player');
+        const playBtn = document.getElementById('play-btn');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const progressBar = document.getElementById('progress-bar');
+        const progressFill = document.getElementById('progress-fill');
+        const currentTimeEl = document.getElementById('current-time');
+        const durationEl = document.getElementById('duration');
+        const messageContainer = document.getElementById('message-container');
+        const trackTitle = document.getElementById('track-title');
+        const trackArtist = document.getElementById('track-artist');
+        const trackListEl = document.getElementById('track-list');
+        const goMessages = document.getElementById('go-messages');
+
+        const playlist = [
+            {
+                title: 'Just The Way You Are',
+                artist: 'Bruno Mars',
+                src: 'just the way.mp4',
+                duration: '0:36',
+                message: 'Just the Way You Are reminds me of you kasi everytime I hear it, ikaw agad naiisip ko without even trying. Yung song kasi talks about admiring someone for who they are, and ganon talaga tingin ko sayo. Kahit simpleng smile mo lang, enough na para mapangiti ako. I like how natural you are, and honestly, I don’t think you realize how much impact you have on me. Parang kahit anong insecurities mo, wala naman akong nakikitang kulang sayo.',
+            },
+            {
+                title: 'Beautiful',
+                artist: 'Bazzi',
+                src: 'beautiful.mp4',
+                duration: '0:40',
+                message: 'Beautiful reminds me of you kasi the lyrics feel exactly like how I see you. Especially yung part na “love your imperfections every angle,” kasi honestly kahit anong side mo makita ko, ang ganda mo pa rin sa paningin ko. You’re so perfect but concept lang ’yon kaya i would say you’re the epitome of beauty',
+            },
+            {
+                title: 'Pangarap lang kita',
+                artist: 'Parokya ni Edgar',
+                src: 'pangarap.mp4',
+                duration: '0:33',
+                message: 'This reminds me of you kasi parang ganon yung feeling ng line na “prinsesa ka, ako’y mukhang dukhang,” HAHAHAH yung tipong alam ko naman na malayo ka sa level or situation ko (out of league), pero kahit ganon, napapangiti pa rin ako habang ka-chat kita </br> “pangarap lang kita,” kasi minsan ganun talaga yung feeling ko habang kausap kita HAHAHAH'
+            },
+            {
+                title: 'Dalangin',
+                artist: 'Earl Agustin',
+                src: 'Dalangin.mp4',
+                duration: '0:23',
+                message: 'Dalangin reminds me of you kasi the lyrics feel like a prayer for someone special, and that’s exactly how I feel about you. Yung tipong kahit anong mangyari, I just want the best for you, and I hope na kahit papaano, I can be a part of that happiness. Parang every time na naririnig ko yung line na “ikaw ang panalangin na makasama hanggang sa pagtanda” it’s like a wish that I hope will come true someday, kahit na alam kong malabo. Pero hey, it’s still a nice thought to have, di ba?',
+            },
+            {
+                title: 'Wanna Be Yours',
+                artist: 'Arctic Monkeys',
+                src: 'wanna.mp4',
+                duration: '0:45',
+                message: 'As the music says here HAHAHAAHA',
+            }
+        ];
+
+        let currentTrackIndex = -1;
+
+        function createTrackItem(track, index) {
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.className = 'playlist-item';
+            button.dataset.index = index;
+            button.innerHTML = `
+                <div class="track-number">${index + 1}</div>
+                <div class="track-content">
+                    <div class="track-name">${track.title}</div>
+                    <div class="track-info">${track.artist} • ${track.duration}</div>
+                </div>
+                <div>▶</div>
+            `;
+            button.addEventListener('click', () => selectTrack(index));
+            return button;
+        }
+
+        function renderPlaylist() {
+            trackListEl.innerHTML = '';
+            playlist.forEach((track, index) => {
+                const item = createTrackItem(track, index);
+                if (index === currentTrackIndex && currentTrackIndex >= 0) {
+                    item.classList.add('active');
+                }
+                trackListEl.appendChild(item);
+            });
+        }
+
+        function renderMessage(message) {
+            messageContainer.innerHTML = `<p>${message}</p>`;
+        }
+
+        function loadTrack(index) {
+            currentTrackIndex = index;
+            const track = playlist[index];
+            audio.src = track.src;
+            trackTitle.textContent = track.title;
+            trackArtist.textContent = track.artist;
+            durationEl.textContent = track.duration;
+            renderMessage(track.message);
+            renderPlaylist();
+        }
+
+        function selectTrack(index) {
+            loadTrack(index);
+            audio.currentTime = 0;
+            audio.play();
+            playBtn.textContent = '⏸';
+        }
+
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${mins}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        audio.addEventListener('loadedmetadata', () => {
+            durationEl.textContent = formatTime(audio.duration);
+        });
+
+        audio.addEventListener('timeupdate', () => {
+            if (!audio.duration) return;
+            const progress = (audio.currentTime / audio.duration) * 100;
+            progressFill.style.width = `${progress}%`;
+            currentTimeEl.textContent = formatTime(audio.currentTime);
+        });
+
+        progressBar.addEventListener('click', (event) => {
+            if (!audio.duration) return;
+            const rect = progressBar.getBoundingClientRect();
+            const clickX = event.clientX - rect.left;
+            audio.currentTime = (clickX / rect.width) * audio.duration;
+        });
+
+        playBtn.addEventListener('click', () => {
+            if (audio.paused) {
+                audio.play();
+                playBtn.textContent = '⏸';
+            } else {
+                audio.pause();
+                playBtn.textContent = '▶';
+            }
+        });
+
+        prevBtn.addEventListener('click', () => {
+            if (currentTrackIndex === -1) {
+                selectTrack(0);
+                return;
+            }
+            const nextIndex = (currentTrackIndex - 1 + playlist.length) % playlist.length;
+            selectTrack(nextIndex);
+        });
+
+        nextBtn.addEventListener('click', () => {
+            if (currentTrackIndex === -1) {
+                selectTrack(0);
+                return;
+            }
+            const nextIndex = (currentTrackIndex + 1) % playlist.length;
+            selectTrack(nextIndex);
+        });
+
+        audio.addEventListener('ended', () => {
+            playBtn.textContent = '▶';
+        });
+
+        goMessages.addEventListener('click', () => {
+            document.body.classList.add('fade-out');
+            setTimeout(() => {
+                window.location.href = 'messages.html';
+            }, 600);
+        });
+
+        renderPlaylist();
+    </script>
+</body>
+
+</html>
